@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ title }}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fff;
+      color: #333;
+    }
+
+    nav {
+      width: 100%;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      position: relative;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: bold;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 25px;
+    }
+
+    .nav-links a {
+      font-size: 16px;
+      text-decoration: none;
+      color: #333;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover, .active {
+      color: #764ba2;
+      font-weight: 700;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p, ul {
+      font-size: 16px;
+      margin: 10px 0 20px;
+      text-align: center;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      margin: 8px 0;
+    }
+
+    footer {
+      background: linear-gradient(to right, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 50px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">Code2Pseudo</div>
+    <div class="nav-links">
+      <a href="/home">Home</a>
+      <a href="/about">About</a>
+      <a href="/help" class="active">Help</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Help and Support</h1>
+    <p>
+      We are here to help you with any questions, issues, or concerns you may have. Whether you need assistance with using Code2Pseudo, have suggestions for improvements, or simply want to say hello — we’re here to listen.
+    </p>
+
+    <h2>Frequently Asked Questions</h2>
+    <p>
+      To get the most out of Code2Pseudo, please refer to our frequently asked questions (FAQs) page. You can find answers to common queries and troubleshooting tips there.
+    </p>
+
+    <h2>Contact Us</h2>
+    <p>
+      If you cannot find the answer to your question in our FAQs or if you need immediate assistance, please don't hesitate to reach out to us. You can contact us using the following methods:
+    </p>
+
+    <ul>
+      <li><strong>Email:</strong> spekta1222@gmail.com</li>
+      <li><strong>Phone:</strong> +91 8530816697</li>
+    </ul>
+  </div>
+
+  <footer>
+    &copy; {{ year }} {{ title[:12] }}. All rights reserved.
+  </footer>
+
+</body>
+</html>

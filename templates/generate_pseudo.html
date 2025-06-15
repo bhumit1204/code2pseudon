@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Generate Pseudocode</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #ffffff;
+      color: #333;
+    }
+    nav {
+      width: 100%;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      position: relative;
+    }
+    .logo {
+      font-size: 1.6rem;
+      font-weight: bold;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 25px;
+    }
+    .nav-links a {
+      font-size: 16px;
+      text-decoration: none;
+      color: #333;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover,
+    .active {
+      color: #764ba2;
+      font-weight: 700;
+    }
+    .container {
+      max-width: 800px;
+      margin: 60px auto;
+      padding: 0 20px;
+    }
+    h1 {
+      font-size: 2.8rem;
+      text-align: center;
+      margin-bottom: 40px;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+    label {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1rem;
+      border: 1.5px solid #ccc;
+      border-radius: 6px;
+      resize: vertical;
+    }
+    textarea {
+      min-height: 120px;
+    }
+    .generate-btn {
+      align-self: center;
+      padding: 14px 30px;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: white;
+      font-size: 1.05rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .generate-btn:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+    .output-section {
+      margin-top: 50px;
+      border: 1.5px solid #ccc;
+      padding: 25px;
+      border-radius: 8px;
+      background-color: #fafafa;
+      position: relative;
+    }
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      padding: 6px 14px;
+      background-color: #764ba2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .copy-btn:hover {
+      opacity: 0.9;
+    }
+    .code-area {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 1rem;
+      min-height: 200px;
+      resize: vertical;
+      margin-top: 10px;
+    }
+    .loader {
+      margin-top: 10px;
+      font-size: 0.95rem;
+      color: #555;
+    }
+    .exec-time {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #888;
+    }
+    footer {
+      margin-top: 60px;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      padding: 20px;
+      color: white;
+      text-align: center;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">Code2Pseudo</div>
+    <div class="nav-links">
+      <a href="/home">Home</a>
+      <a href="/about">About</a>
+      <a href="/help">Help</a>
+    </div>
+  </nav>
+  <div class="container">
+    <h1>Generate Pseudocode</h1>
+    <form>
+      <div>
+        <label for="codeTitle">Title of Code</label>
+        <input type="text" id="codeTitle" name="codeTitle" placeholder="Enter the title of your code" />
+      </div>
+      <div>
+        <label for="description">Description <span style="font-weight: normal;">(helps generate more accurate results)</span></label>
+        <textarea id="description" name="description" placeholder="Describe what your code should do..."></textarea>
+      </div>
+      <div>
+        <label for="tags">Tags (comma separated)</label>
+        <input type="text" id="tags" name="tags" placeholder="e.g. loops, array, sorting" />
+      </div>
+      <button type="button" class="generate-btn">Generate</button>
+    </form>
+    <div class="output-section">
+      <div class="section-title">📄 Generated Pseudocode</div>
+      <button type="button" class="copy-btn" onclick="copyToClipboard()">Copy</button>
+      <textarea class="code-area" id="pseudoOutput" readonly placeholder="Pseudocode output will appear here..."></textarea>
+      <div id="loader" class="loader" style="display: none;">⏳ Processing...</div>
+      <div id="execTime" class="exec-time"></div>
+    </div>
+  </div>
+  <footer>
+    &copy; 2025 Code2Pseudo. All rights reserved.
+  </footer>
+  <script>
+    document.querySelector('.generate-btn').addEventListener('click', async () => {
+      const title = document.getElementById('codeTitle').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const tags = document.getElementById('tags').value.trim();
+      const outputArea = document.getElementById('pseudoOutput');
+      const loader = document.getElementById('loader');
+      const execTimeEl = document.getElementById('execTime');
+    
+      outputArea.value = '';
+      execTimeEl.textContent = '';
+      loader.style.display = 'block';
+      const start = performance.now();
+    
+      try {
+        const response = await fetch('/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, description, tags })
+        });
+    
+        const end = performance.now();
+        const duration = ((end - start) / 1000).toFixed(2);
+        loader.style.display = 'none';
+    
+        const text = await response.text();
+    
+        try {
+          const data = JSON.parse(text);
+    
+          if (data.pseudo_content) {
+            outputArea.value = data.pseudo_content;
+            execTimeEl.textContent = `⏱️ Generated in ${duration} seconds`;
+          } else if (data.error) {
+            outputArea.value = '⚠️ Error: ' + data.error;
+          } else {
+            outputArea.value = '⚠️ Unexpected response structure.';
+          }
+    
+        } catch (jsonErr) {
+          const match = text.match(/"pseudo_content"\s*:\s*"([\s\S]*?)"\s*,?\n/);
+          if (match) {
+            const decoded = match[1].replace(/\\n/g, "\n").replace(/\\"/g, '"');
+            outputArea.value = decoded;
+            execTimeEl.textContent = `⏱️ Generated in ${duration} seconds`;
+          } else {
+            outputArea.value = '❌ Could not parse response.';
+          }
+        }
+    
+      } catch (err) {
+        loader.style.display = 'none';
+        outputArea.value = '❌ Network error. Please try again.';
+      }
+    });
+    
+    function copyToClipboard() {
+      const output = document.getElementById("pseudoOutput");
+      output.select();
+      output.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      alert("Copied to clipboard!");
+    }
+    </script>
+    
+</body>
+</html>

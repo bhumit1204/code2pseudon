@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ title }}</title>
+  <style>
+    .card {
+      cursor: pointer;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fff;
+      color: #333;
+    }
+    nav {
+      width: 100%;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      position: relative;
+    }
+    .logo {
+      font-size: 1.6rem;
+      font-weight: bold;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 25px;
+    }
+    .nav-links a {
+      font-size: 16px;
+      text-decoration: none;
+      color: #333;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover, .active {
+      color: #764ba2;
+      font-weight: 700;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+    }
+    .card {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
+      transition: transform 0.3s ease;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .copy-card-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #764ba2;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .filters {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+    .filters select {
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      background-color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 180px;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      color: #2d3748;
+      font-weight: 500;
+    }
+    .filters select:hover {
+      border-color: #667eea;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.1), 0 2px 4px -1px rgba(102, 126, 234, 0.06);
+    }
+    .filters select:focus {
+      outline: none;
+      border-color: #764ba2;
+      box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.2);
+      transform: translateY(-1px);
+    }
+    .type-badge {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-left: 10px;
+      color: white;
+    }
+    .type-badge.code {
+      background: #667eea;
+    }
+    .type-badge.pseudo {
+      background: #764ba2;
+    }
+    .code-name {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #764ba2;
+      margin-bottom: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-title {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-code {
+      font-family: monospace;
+      font-size: 14px;
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .card-footer {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #888;
+      text-align: right;
+    }
+    footer {
+      background: linear-gradient(to right, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 50px;
+    }
+  </style>
+  <script>
+    function filterAndSort() {
+      const typeFilter = document.getElementById('typeFilter').value;
+      const sortBy = document.getElementById('sortBy').value;
+      const cards = Array.from(document.querySelectorAll('.card'));
+
+      cards.forEach(card => {
+        const type = card.querySelector('.type-badge').textContent;
+        if (typeFilter === 'all' || type === typeFilter) {
+          card.style.opacity = '1';
+          card.style.display = '';
+        } else {
+          card.style.opacity = '0';
+          setTimeout(() => card.style.display = 'none', 300);
+        }
+      });
+
+      const visibleCards = cards.filter(card => card.style.display !== 'none');
+      visibleCards.sort((a, b) => {
+        const aName = a.querySelector('.code-name').textContent.trim();
+        const bName = b.querySelector('.code-name').textContent.trim();
+        const aDate = new Date(a.querySelector('.card-footer').textContent.replace('Created on ', ''));
+        const bDate = new Date(b.querySelector('.card-footer').textContent.replace('Created on ', ''));
+        const aType = a.querySelector('.type-badge').textContent;
+        const bType = b.querySelector('.type-badge').textContent;
+
+        switch(sortBy) {
+          case 'date-desc': return bDate - aDate;
+          case 'date-asc': return aDate - bDate;
+          case 'name-asc': return aName.localeCompare(bName);
+          case 'name-desc': return bName.localeCompare(aName);
+          case 'type-code': return aType === 'code' ? -1 : 1;
+          case 'type-pseudo': return aType === 'pseudo' ? -1 : 1;
+          default: return 0;
+        }
+      });
+
+      const cardGrid = document.querySelector('.card-grid');
+      visibleCards.forEach((card, index) => {
+        setTimeout(() => {
+          cardGrid.appendChild(card);
+          card.style.opacity = '1';
+        }, index * 100);
+      });
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => alert("Copied to clipboard!"));
+    }
+  </script>
+</head>
+<body>
+  <nav>
+    <div class="logo">Code2Pseudo</div>
+    <div class="nav-links">
+      <a href="/home">Home</a>
+      <a href="/about">About</a>
+      <a href="/help">Help</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>{{ title }}</h1>
+
+    <div class="filters">
+      <select id="typeFilter" onchange="filterAndSort()">
+        <option value="all">All Types</option>
+        <option value="code">Code Only</option>
+        <option value="pseudo">Pseudocode Only</option>
+      </select>
+      <select id="sortBy" onchange="filterAndSort()">
+        <option value="date-desc">📅 Newest First</option>
+        <option value="date-asc">📅 Oldest First</option>
+        <option value="name-asc">📝 Name A-Z</option>
+        <option value="name-desc">📝 Name Z-A</option>
+        <option value="type-code">💻 Code First</option>
+        <option value="type-pseudo">📋 Pseudocode First</option>
+      </select>
+    </div>
+
+    <div class="card-grid">
+      {% for item in creations %}
+      <div class="card" onclick="copyToClipboard(`{{ item.code | escape | replace('\n', '\\n') }}`)">
+        <div class="card-title">
+          <span class="code-name">{{ item.description }}</span>
+          <span class="type-badge {{ item.type }}">{{ item.type }}</span>
+        </div>
+        <div class="card-code">{{ item.code | e | replace('\n', '<br>') | safe }}</div>
+      </div>      
+      {% endfor %}
+    </div>
+  </div>
+  <script>
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("✅ Pseudocode copied to clipboard!");
+      });
+    }
+  </script>
+  
+  <footer>
+    &copy; {{ year }} {{ title[:12] }}. All rights reserved.
+  </footer>
+</body>
+</html>

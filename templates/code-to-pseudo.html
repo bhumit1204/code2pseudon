@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ title }}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fff;
+      color: #333;
+    }
+
+    nav {
+      width: 100%;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      position: relative;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: bold;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 25px;
+    }
+
+    .nav-links a {
+      font-size: 16px;
+      text-decoration: none;
+      color: #333;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover, .active {
+      color: #764ba2;
+      font-weight: 700;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .form-wrapper {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .input-section, .output-section {
+      background-color: #fff;
+      padding: 20px;
+      flex: 1;
+      min-width: 450px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .code-area {
+      width: 100%;
+      height: 300px;
+      font-family: monospace;
+      font-size: 14px;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: inset 0 0 3px #ccc;
+      resize: vertical;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      background: none;
+      border: none;
+      color: #999;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 5px;
+      transition: 0.2s ease-in-out;
+    }
+
+    .copy-btn:hover {
+      background-color: #eee;
+      color: #000;
+    }
+
+    .loader {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 15px;
+      color: #555;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .exec-time {
+      font-size: 14px;
+      text-align: right;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    button[type="submit"] {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+
+    footer {
+      background: linear-gradient(to right, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 50px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background-color: #333;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">Code2Pseudo</div>
+    <div class="nav-links">
+      <a href="/home">Home</a>
+      <a href="/about">About</a>
+      <a href="/help">Help</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>{{ title }}</h1>
+    <form id="codeForm">
+      <div class="form-wrapper">
+        <div class="input-section">
+          <div class="section-title"> <strong>&#60;&#47;&#62;</strong> Enter Your Code</div>
+          <textarea class="code-area" id="codeInput" name="code" placeholder="Paste your full code here..."></textarea>
+        </div>
+
+        <div class="output-section">
+          <div class="section-title">📄 Generated Pseudocode</div>
+          <button type="button" class="copy-btn" onclick="copyToClipboard()">Copy</button>
+          <textarea class="code-area" id="pseudoOutput" readonly placeholder="Pseudocode output will appear here..."></textarea>
+          <div id="loader" class="loader" style="display: none;">⏳ Processing...</div>
+          <div id="execTime" class="exec-time"></div>
+        </div>
+      </div>
+
+      <button type="submit">Convert to Pseudocode</button>
+    </form>
+  </div>
+
+  <footer>
+    &copy; {{ year }} {{ title[:12] }}. All rights reserved.
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    window.onload = function () {
+      const storedCode = localStorage.getItem('codeToConvert');
+      if (storedCode) {
+        document.getElementById('codeInput').value = storedCode;
+        localStorage.removeItem('codeToConvert');
+      }
+    };
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      const code = document.getElementById('codeInput').value;
+      const output = document.getElementById('pseudoOutput');
+      const loader = document.getElementById('loader');
+      const execTime = document.getElementById('execTime');
+
+      if (!code.trim()) {
+        showToast("⚠️ Please enter some code.");
+        return;
+      }
+
+      loader.style.display = 'block';
+      output.value = '';
+      execTime.textContent = '';
+      const start = Date.now();
+
+      try {
+        const response = await fetch('/api/code-to-pseudo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+
+        const data = await response.json();
+        const duration = ((Date.now() - start) / 1000).toFixed(2);
+
+        if (response.ok && data.pseudocode) {
+          output.value = data.pseudocode;
+          execTime.textContent = `✅ Executed in ${duration} seconds`;
+        } else {
+          const errorMsg = data?.error || 'Unknown error occurred.';
+          output.value = `❌ Error: ${errorMsg}`;
+          showToast(`❌ ${errorMsg}`);
+        }
+      } catch (error) {
+        output.value = `❌ Network error: ${error.message}`;
+        showToast(`❌ ${error.message}`);
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    function copyToClipboard() {
+      const output = document.getElementById('pseudoOutput');
+      if (!output.value.trim()) {
+        showToast("⚠️ Nothing to copy.");
+        return;
+      }
+
+      output.select();
+      output.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      showToast("✅ Output copied to clipboard!");
+    }
+
+    document.getElementById('codeForm').addEventListener('submit', handleFormSubmit);
+  </script>
+</body>
+</html>

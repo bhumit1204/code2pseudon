@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ title }}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fff;
+      color: #333;
+    }
+
+    nav {
+      width: 100%;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      position: relative;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: bold;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 25px;
+    }
+
+    .nav-links a {
+      font-size: 16px;
+      text-decoration: none;
+      color: #333;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover, .active {
+      color: #764ba2;
+      font-weight: 700;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      background: linear-gradient(to right, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-top: 30px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 15px;
+    }
+
+    ul {
+      margin-top: 10px;
+      padding-left: 20px;
+    }
+
+    li {
+      font-size: 16px;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    li strong {
+      color: #764ba2;
+    }
+
+    footer {
+      background: linear-gradient(to right, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">Code2Pseudo</div>
+    <div class="nav-links">
+      <a href="/home">Home</a>
+      <a href="/about" class="active">About</a>
+      <a href="/help">Help</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>About Us</h1>
+    <h2>Meet Our Team</h2>
+<p>We are <strong>Code Catalysts</strong> — a group of passionate developers, educators, and technologists committed to making programming more approachable for everyone. Our diverse backgrounds help us bring together creative problem-solving, user-first design, and technical excellence in everything we build.</p>
+
+<ul>
+  <li><strong>Innovators at Heart:</strong> We thrive on challenges and believe in pushing boundaries in education technology.</li>
+  <li><strong>Driven by Purpose:</strong> Every feature we develop aims to bridge the gap between learning and application.</li>
+  <li><strong>Collaboration-Focused:</strong> Our team works closely across roles — from developers to UI designers — to deliver seamless user experiences.</li>
+  <li><strong>Community-Driven:</strong> We actively listen to feedback from our users and are constantly improving the platform based on real learning needs.</li>
+</ul>
+
+<p>With <strong>Code2Pseudo</strong>, we aim to empower students, teachers, and self-learners to better understand the logic behind code, one pseudocode at a time.</p>
+
+    <h2>Our Mission</h2>
+    <p>Our mission is to simplify the process of learning and understanding code by providing an accessible and user-friendly tool. We believe that coding should be approachable for all, and we are committed to making it easier than ever before.</p>
+
+    <h2>What We Do</h2>
+    <p>At Code2Pseudo, we understand that code can be complex, but pseudocode can be simple. That’s why we offer a comprehensive suite of features to help you:</p>
+    <ul>
+      <li><strong>Code Conversion:</strong> Convert code snippets from various programming languages into pseudocode. Whether you're a beginner or an experienced developer, we have you covered.</li>
+      <li><strong>Step-by-Step Guidance:</strong> Receive step-by-step instructions and explanations for each line of pseudocode. This ensures that you grasp the logic behind the code conversion process.</li>
+      <li><strong>Community Support:</strong> Connect with a community of like-minded learners and developers. Share your pseudocode experiences, ask questions, and get help from other coders.</li>
+      <li><strong>Customization:</strong> Tailor your pseudocode experience to your preferences. You can choose the programming language you want to convert and whether you want detailed or brief instructions.</li>
+    </ul>
+  </div>
+
+  <footer>
+    &copy; {{ year }} {{ title[:12] }}. All rights reserved.
+  </footer>
+
+</body>
+</html>
