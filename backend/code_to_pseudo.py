@@ -8,16 +8,6 @@ load_dotenv()
 
 # More robust API key loading with validation
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-print(f"API Key loaded: {'Yes' if OPENROUTER_API_KEY else 'No'}")
-print(f"API Key starts with: {OPENROUTER_API_KEY[:10]}..." if OPENROUTER_API_KEY else "No API Key")
-
-if not OPENROUTER_API_KEY:
-    raise OSError("OPENROUTER_API_KEY is not set in environment variables.")
-
-# Validate API key format (OpenRouter keys typically start with 'sk-or-')
-if not OPENROUTER_API_KEY.startswith('sk-or-'):
-    print("WARNING: API key doesn't start with 'sk-or-', this might cause issues")
-
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODEL_NAME = "meta-llama/llama-3.3-8b-instruct:free"
 
