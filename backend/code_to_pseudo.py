@@ -4,9 +4,11 @@ from flask import Blueprint, request, jsonify
 from dotenv import load_dotenv
 import json
 
-
 load_dotenv()
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
+if not OPENROUTER_API_KEY:
+    raise OSError("OPENROUTER_API_KEY is not set in environment variables.")
 
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODEL_NAME = "meta-llama/llama-3.3-8b-instruct:free"
@@ -387,9 +389,6 @@ START PROGRAM
 END PROGRAM
 """
 
-OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL_NAME = "meta-llama/llama-3.3-8b-instruct:free"
-
 @code_to_pseudo_api.route('/api/code-to-pseudo', methods=['POST'])
 def convert_code_to_pseudocode():
     return _convert(request.get_json().get("code", ""))
@@ -402,69 +401,40 @@ def _convert(code_input):
     lower_case_input = code_input.lower()
 
     strong_pseudocode_indicators = [
-        "start program",
-        "end program",
-        "function",
-        "end function",
-        "declare",
-        "assign",
-        "if then",
-        "end if",
-        "for each",
-        "end for",
-        "while",
-        "end while",
-        "print",
-        "get input",
-        "call ", 
-        "return " 
+        "start program", "end program", "function", "end function",
+        "declare", "assign", "if then", "end if", "for each", "end for",
+        "while", "end while", "print", "get input", "call ", "return "
     ]
 
     programming_language_indicators = [
         "{", "}", ";", "(", ")", "[", "]", "=", "==", "!=", "<", ">", "<=", ">=", "+", "-", "*", "/", "%",
         "&&", "||", "!", "->", "::", "public", "private", "protected", "static", "void", "main", "new ",
-
         "def ", "class ", "import ", "from ", "print(", "for ", "while ", "if ", "elif ", "else:", "try:", "except:",
         "lambda", "self.", "pass", "yield",
-
         "var ", "let ", "const ", "function ", "console.log", "=>", "return;", "typeof ", "await ", "async ",
-        "class ", "constructor(", "export ", "import {",
-
-        "public static void main", "System.out.println", "new ", "int ", "String ", "double ", "boolean ", "class ",
-        "extends ", "implements ", "try {", "catch (", "finally {", "import java.",
-
-        "#include", "using namespace", "std::", "int main()", "cout <<", "cin >>", "new ", "delete ", "nullptr",
-        "void ", "struct ", "union ", "enum ", "->", "private:", "public:", "protected:", "namespace ",
-        "class ", "virtual ", "override ",
-
-        "def ", "class ", "end", "puts ", "do ", "require ", "attr_accessor", "initialize(",
-
-        "func ", "package ", "import (", "var ", "const ", "if ", "for ", "range ", "fmt.", "make(", "interface{",
-
-        "<?php", "$", "->", "function ", "class ", "echo ", "require_once", "include ", "use ", "namespace ", "::class"
+        "constructor(", "export ", "import {",
+        "System.out.println", "String ", "boolean ", "extends ", "implements ", "catch (", "finally {", "import java.",
+        "#include", "using namespace", "std::", "int main()", "cout <<", "cin >>", "nullptr", "enum ", "union ",
+        "require ", "attr_accessor", "initialize(", "interface{", "<?php", "$", "echo ", "require_once"
     ]
 
     is_likely_pseudocode = False
 
-    pseudocode_indicator_count = sum(1 for indicator in strong_pseudocode_indicators if indicator in lower_case_input)
-    prog_lang_indicator_count = sum(1 for indicator in programming_language_indicators if indicator in lower_case_input)
+    pseudocode_indicator_count = sum(1 for i in strong_pseudocode_indicators if i in lower_case_input)
+    prog_lang_indicator_count = sum(1 for i in programming_language_indicators if i in lower_case_input)
 
     if pseudocode_indicator_count >= 5 and prog_lang_indicator_count <= 3:
         is_likely_pseudocode = True
 
-    if ("start program" in lower_case_input and "end program" in lower_case_input) and prog_lang_indicator_count < 5:
-        is_likely_pseudocode = True
-    if ("function" in lower_case_input and "end function" in lower_case_input) and prog_lang_indicator_count < 5:
-        is_likely_pseudocode = True
-    if ("if " in lower_case_input and "then" in lower_case_input and "end if" in lower_case_input) and prog_lang_indicator_count < 5:
-        is_likely_pseudocode = True
-    if ("for each" in lower_case_input and "end for" in lower_case_input) and prog_lang_indicator_count < 5:
-        is_likely_pseudocode = True
-    if ("while" in lower_case_input and "end while" in lower_case_input) and prog_lang_indicator_count < 5:
+    if ("start program" in lower_case_input and "end program" in lower_case_input and prog_lang_indicator_count < 5) or \
+       ("function" in lower_case_input and "end function" in lower_case_input and prog_lang_indicator_count < 5) or \
+       ("if " in lower_case_input and "then" in lower_case_input and "end if" in lower_case_input and prog_lang_indicator_count < 5) or \
+       ("for each" in lower_case_input and "end for" in lower_case_input and prog_lang_indicator_count < 5) or \
+       ("while" in lower_case_input and "end while" in lower_case_input and prog_lang_indicator_count < 5):
         is_likely_pseudocode = True
 
     if prog_lang_indicator_count >= 10:
-        is_likely_pseudocode = False 
+        is_likely_pseudocode = False
     if lower_case_input.count('{') > 1 or lower_case_input.count(';') > 5 or \
        ("class " in lower_case_input and "def " in lower_case_input) or \
        ("public static void main" in lower_case_input) or \
@@ -473,11 +443,12 @@ def _convert(code_input):
 
     if is_likely_pseudocode:
         return jsonify({
-            "error": "Input appears to be pseudocode. This converter translates executable code to pseudocode, not pseudocode to pseudocode. Please provide actual programming code."
+            "error": "Input appears to be pseudocode. Please provide actual code to convert."
         }), 400
 
+    # Now call OpenRouter API
     headers = {
-        "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json"
     }
 
@@ -494,33 +465,28 @@ def _convert(code_input):
         response.raise_for_status()
 
         result = response.json()
-        
         output = result["choices"][0]["message"]["content"].strip()
-        
+
         return jsonify({"pseudocode": output})
 
     except requests.exceptions.HTTPError as http_e:
-        print(f"HTTP Error from OpenRouter: {http_e.response.status_code} - {http_e.response.text}")
         return jsonify({
-            "error": "OpenRouter API returned an error",
+            "error": "OpenRouter API error",
             "status_code": http_e.response.status_code,
             "details": http_e.response.json() if http_e.response.text else str(http_e)
         }), http_e.response.status_code
-    except requests.exceptions.ConnectionError as conn_e:
-        print(f"Connection Error communicating with OpenRouter: {str(conn_e)}")
-        return jsonify({"error": f"Network connection error with OpenRouter: {str(conn_e)}"}), 500
-    except requests.exceptions.Timeout as timeout_e:
-        print(f"Timeout Error communicating with OpenRouter: {str(timeout_e)}")
-        return jsonify({"error": f"Request to OpenRouter timed out: {str(timeout_e)}"}), 500
-    except requests.exceptions.RequestException as req_e:
-        print(f"An unknown Request error occurred with OpenRouter: {str(req_e)}")
-        return jsonify({"error": f"An unknown API communication error occurred: {str(req_e)}"}), 500
-    except json.JSONDecodeError as json_e:
-        print(f"Error decoding JSON from OpenRouter API response: {str(json_e)}")
-        return jsonify({"error": "Failed to parse API response from OpenRouter. Unexpected JSON format."}), 500
-    except KeyError as key_e:
-        print(f"Unexpected JSON structure from OpenRouter API: Missing key {key_e}")
-        return jsonify({"error": f"Unexpected response structure from OpenRouter API: Missing key {key_e}. Please check the API response format."}), 500
+
+    except requests.exceptions.ConnectionError as e:
+        return jsonify({"error": "Network error while contacting OpenRouter", "details": str(e)}), 500
+
+    except requests.exceptions.Timeout as e:
+        return jsonify({"error": "Request timed out", "details": str(e)}), 500
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": "Unexpected request error", "details": str(e)}), 500
+
+    except (json.JSONDecodeError, KeyError) as e:
+        return jsonify({"error": "Unexpected response format", "details": str(e)}), 500
+
     except Exception as e:
-        print(f"An unexpected error occurred in _convert: {str(e)}")
-        return jsonify({"error": f"An unexpected error occurred during conversion: {str(e)}"}), 500
+        return jsonify({"error": "Unhandled error", "details": str(e)}), 500
