@@ -5,11 +5,18 @@ from dotenv import load_dotenv
 import json
 
 load_dotenv()
-print("Loaded OPENROUTER_API_KEY:", os.getenv("OPENROUTER_API_KEY"))
+
+# More robust API key loading with validation
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+print(f"API Key loaded: {'Yes' if OPENROUTER_API_KEY else 'No'}")
+print(f"API Key starts with: {OPENROUTER_API_KEY[:10]}..." if OPENROUTER_API_KEY else "No API Key")
 
 if not OPENROUTER_API_KEY:
     raise OSError("OPENROUTER_API_KEY is not set in environment variables.")
+
+# Validate API key format (OpenRouter keys typically start with 'sk-or-')
+if not OPENROUTER_API_KEY.startswith('sk-or-'):
+    print("WARNING: API key doesn't start with 'sk-or-', this might cause issues")
 
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODEL_NAME = "meta-llama/llama-3.3-8b-instruct:free"
@@ -447,10 +454,12 @@ def _convert(code_input):
             "error": "Input appears to be pseudocode. Please provide actual code to convert."
         }), 400
 
-    # Now call OpenRouter API
+    # Enhanced headers with additional authentication details
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://code2pseudo.onrender.com",  # Add your domain
+        "X-Title": "Code2Pseudo Converter"  # Optional: Add title for OpenRouter
     }
 
     payload = {
@@ -458,36 +467,84 @@ def _convert(code_input):
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": code_input}
-        ]
+        ],
+        "temperature": 0.1,  # Lower temperature for more consistent output
+        "max_tokens": 4000   # Ensure enough tokens for response
     }
 
+    # Add debugging information
+    print(f"Making request to: {OPENROUTER_API_URL}")
+    print(f"Model: {MODEL_NAME}")
+    print(f"Headers: {dict((k, v[:20] + '...' if k == 'Authorization' else v) for k, v in headers.items())}")
+
     try:
-        response = requests.post(OPENROUTER_API_URL, headers=headers, json=payload)
+        response = requests.post(
+            OPENROUTER_API_URL, 
+            headers=headers, 
+            json=payload,
+            timeout=60  # Add timeout
+        )
+        
+        # Log the full response for debugging
+        print(f"Response status: {response.status_code}")
+        print(f"Response headers: {dict(response.headers)}")
+        
+        if response.status_code == 401:
+            print(f"401 Error response body: {response.text}")
+            return jsonify({
+                "error": "Authentication failed with OpenRouter API",
+                "details": "Please check your API key configuration",
+                "response_body": response.text
+            }), 401
+
         response.raise_for_status()
 
         result = response.json()
+        
+        # Check if the response has the expected structure
+        if "choices" not in result or not result["choices"]:
+            print(f"Unexpected response structure: {result}")
+            return jsonify({
+                "error": "Unexpected response format from OpenRouter",
+                "details": result
+            }), 500
+
         output = result["choices"][0]["message"]["content"].strip()
 
         return jsonify({"pseudocode": output})
 
     except requests.exceptions.HTTPError as http_e:
+        error_details = "Unknown error"
+        try:
+            error_details = http_e.response.json()
+        except:
+            error_details = http_e.response.text
+
+        print(f"HTTP Error: {http_e}")
+        print(f"Error details: {error_details}")
+        
         return jsonify({
             "error": "OpenRouter API error",
             "status_code": http_e.response.status_code,
-            "details": http_e.response.json() if http_e.response.text else str(http_e)
+            "details": error_details
         }), http_e.response.status_code
 
     except requests.exceptions.ConnectionError as e:
+        print(f"Connection Error: {e}")
         return jsonify({"error": "Network error while contacting OpenRouter", "details": str(e)}), 500
 
     except requests.exceptions.Timeout as e:
+        print(f"Timeout Error: {e}")
         return jsonify({"error": "Request timed out", "details": str(e)}), 500
 
     except requests.exceptions.RequestException as e:
+        print(f"Request Error: {e}")
         return jsonify({"error": "Unexpected request error", "details": str(e)}), 500
 
     except (json.JSONDecodeError, KeyError) as e:
+        print(f"JSON/Key Error: {e}")
         return jsonify({"error": "Unexpected response format", "details": str(e)}), 500
 
     except Exception as e:
+        print(f"Unhandled Error: {e}")
         return jsonify({"error": "Unhandled error", "details": str(e)}), 500
