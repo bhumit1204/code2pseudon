@@ -96,7 +96,7 @@ ZILLIZ_MILVUS_PORT=your_milvus_port
 ### 5. Run the Flask Application
 
 ```bash
-flask run
+python app.py
 ```
 
 Visit [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser to access the app.
