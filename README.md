@@ -1,3 +1,4 @@
+
 # Code2Pseudo  
 **Bridging Code & Clarity with AI**
 ---
@@ -66,3 +67,71 @@ To run **Code2Pseudo** locally:
 ```bash
 git clone https://github.com/YourGitHubUsername/Code2Pseudo.git
 cd Code2Pseudo
+````
+
+### 2. Create a Virtual Environment
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure Environment Variables
+
+Create a `.env` file in the root directory with the following:
+
+```env
+OPENROUTER_API_KEY=your_openrouter_api_key
+ZILLIZ_MILVUS_HOST=your_milvus_host
+ZILLIZ_MILVUS_PORT=your_milvus_port
+# Add other necessary keys here
+```
+
+### 5. Run the Flask Application
+
+```bash
+flask run
+```
+
+Visit [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser to access the app.
+
+---
+
+## 🛠 How to Use
+
+* **Code Conversion**:
+  Paste code, select "pseudocode", and click *Convert*.
+
+* **Pseudocode Conversion**:
+  Paste pseudocode, select target language (e.g., Python), and click *Convert*.
+
+* **Chat-Based Generation**:
+  Navigate to the chat interface, describe your logic, and receive pseudocode.
+
+* **Browse Community Content**:
+  Head to the 'Browse' tab to explore and learn from user submissions.
+
+---
+
+## 🔮 Future Enhancements
+
+* **IDE Integrations**
+  Plugins for VSCode and other IDEs to use Code2Pseudo within development environments.
+
+* **Advanced Customization**
+  Define pseudocode formatting style and detail level.
+
+* **Version Control Integration**
+  Link converted outputs directly to Git repositories.
+
+* **Expanded AI Model Options**
+  Add support for other AI models via OpenRouter.
+
+* **Specialized Domain Support**
+  Domain-specific pseudocode conversion (e.g., ML, data science).
