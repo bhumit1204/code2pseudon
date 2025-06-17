@@ -43,6 +43,11 @@ Beyond conversion, Code2Pseudo offers a unique **community browsing feature** po
 ---
 
 ## 🧰 Tech Stack
+- **Trae IDE**  
+  A powerful IDE built with AI agent within it, checkout this images of the IDE.
+  ![Screenshot 2025-06-15 092737](https://github.com/user-attachments/assets/0aa72870-fd3f-458e-beb8-1a6c31227298)
+  
+  ![Screenshot 2025-06-15 104316](https://github.com/user-attachments/assets/dcf27ada-6e19-408f-a5c2-dc7bc8b0a639)
 
 - **Flask App**  
   Lightweight, flexible web framework powering the frontend and backend.
